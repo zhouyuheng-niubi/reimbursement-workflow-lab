@@ -1,0 +1,94 @@
+{
+  "pages": [
+    {
+      "path": "pages/auth/login",
+      "style": {
+        "navigationBarTitleText": "登录",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/home/index",
+      "style": {
+        "navigationBarTitleText": "工作台",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/invoice/list",
+      "style": {
+        "navigationBarTitleText": "我的发票夹",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/invoice/ocr",
+      "style": {
+        "navigationBarTitleText": "拍票识别",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/invoice/confirm",
+      "style": {
+        "navigationBarTitleText": "识别确认",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/reimbursement/create",
+      "style": {
+        "navigationBarTitleText": "新建报销",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/reimbursement/list",
+      "style": {
+        "navigationBarTitleText": "我的报销",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/reimbursement/detail",
+      "style": {
+        "navigationBarTitleText": "报销详情",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/approval/pending",
+      "style": {
+        "navigationBarTitleText": "待我审批",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/approval/detail",
+      "style": {
+        "navigationBarTitleText": "审批详情",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/notification/index",
+      "style": {
+        "navigationBarTitleText": "消息中心",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/profile/index",
+      "style": {
+        "navigationBarTitleText": "我的",
+        "navigationStyle": "custom"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "示例地区智能报销",
+    "navigationBarBackgroundColor": "#f3f6fb",
+    "backgroundColor": "#f3f6fb"
+  }
+}

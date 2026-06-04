@@ -1,0 +1,42 @@
+# ================================================================
+# 开发环境配置 (application-dev.yml)
+# ================================================================
+
+spring:
+  # Override datasource for local development
+  datasource:
+    url: jdbc:mysql://localhost:3306/reimbursement_db?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true
+    username: root
+    password: root123
+    druid:
+      stat-view-servlet:
+        enabled: true   # Enable Druid monitor in dev
+
+  # Local Redis (no auth)
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:
+      database: 0
+
+# Verbose SQL logging in dev
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  level:
+    com.project.reimbursement: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    com.baomidou.mybatisplus: DEBUG
+    druid.sql.Statement: DEBUG
+
+# Dev storage: use local filesystem to avoid MinIO dependency
+storage:
+  type: local
+  local:
+    base-path: /tmp/reimbursement/files
+    # 注意: url-prefix 必须包含 /v1 段(StorageService 用它拼完整下载 URL)
+    url-prefix: ${FILE_URL_PREFIX:http://localhost:8080/api/v1/files}

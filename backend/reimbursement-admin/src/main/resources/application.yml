@@ -1,0 +1,191 @@
+# ================================================================
+# 示例地区报销管理平台 - 主配置文件
+# Spring Boot 3.2.x / Java 17
+# ================================================================
+
+spring:
+  application:
+    name: reimbursement-admin
+
+  # ── Active profile (override at startup: -Dspring.profiles.active=prod) ──
+  profiles:
+    active: dev
+
+  # ── Jackson ──
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+    default-property-inclusion: non_null
+
+  # ── Data Source (placeholders; override per profile) ──
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL:jdbc:mysql://localhost:3306/reimbursement_db?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root123}
+    druid:
+      # Initial / min / max pool size
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      # Wait timeout for getting connection (ms)
+      max-wait: 60000
+      # Validation query
+      validation-query: SELECT 1
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      # Time between eviction runs (ms)
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      # Connection keep-alive
+      keep-alive: true
+      # Filter
+      filters: stat,wall
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        login-username: ${DRUID_USER:admin}
+        login-password: ${DRUID_PASS:admin123}
+        allow: 127.0.0.1
+      web-stat-filter:
+        enabled: true
+        url-pattern: /*
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
+
+  # ── Redis ──
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DB:0}
+      timeout: 3000ms
+      lettuce:
+        pool:
+          max-active: 16
+          max-idle: 8
+          min-idle: 2
+          max-wait: 1000ms
+
+  # ── File Upload ──
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50MB
+      max-request-size: 100MB
+
+# ── Server ──
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  tomcat:
+    uri-encoding: UTF-8
+    threads:
+      max: 200
+      min-spare: 10
+
+# ── MyBatis-Plus ──
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: com.project.reimbursement.**.entity
+  global-config:
+    db-config:
+      id-type: ASSIGN_ID
+      logic-delete-field: isDeleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+      update-strategy: NOT_NULL
+      insert-strategy: NOT_NULL
+    banner: false
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+    call-setters-on-nulls: true
+
+# ── JWT ──
+jwt:
+  secret: ${REDACTED_CREDENTIAL_NAME:projectReimbursementPlatformSecretKey2024!@#SecureKey}
+  access-token-expire: 7200       # seconds (2 hours)
+  refresh-token-expire: 604800    # seconds (7 days)
+  token-prefix: "Bearer "
+  header: Authorization
+
+# ── File Storage (MinIO) ──
+storage:
+  type: minio   # minio | local
+  minio:
+    endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
+    access-key: ${MINIO_ACCESS_KEY:minioadmin}
+    secret-key: ${MINIO_SECRET_KEY:minioadmin}
+    bucket-name: ${MINIO_BUCKET:reimbursement}
+  local:
+    base-path: ${FILE_BASE_PATH:/data/reimbursement/files}
+    url-prefix: ${FILE_URL_PREFIX:http://localhost:8080/api/v1/files}
+
+# ── Knife4j / OpenAPI ──
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+    enable-swagger-models: true
+    enable-document-manage: true
+    swagger-model-name: 实体类列表
+  openapi:
+    title: 示例地区报销管理平台接口文档
+    description: Reimbursement Management Platform API
+    email: maintainer@example.com
+    concat: project
+    version: v1.0.0
+    license: Apache 2.0
+    license-url: https://www.apache.org/licenses/LICENSE-2.0.html
+    terms-of-service-url: https://www.project.com
+    group:
+      default:
+        group-name: 全部接口
+        api-rule: package
+        api-rule-resources:
+          - com.project.reimbursement
+
+# ── OCR (Qwen / Alibaba Cloud dedicated invoice OCR) ──
+ocr:
+  provider: ${OCR_PROVIDER:qwen-vl}
+  api-key: ${OCR_API_KEY:}
+  model: ${OCR_MODEL:qwen-vl-ocr-latest}
+  endpoint: ${OCR_ENDPOINT:https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions}
+  access-key-id: ${OCR_ALIYUN_ACCESS_KEY_ID:}
+  access-key-secret: ${OCR_ALIYUN_ACCESS_KEY_SECRET:}
+  region-id: ${OCR_ALIYUN_REGION_ID:cn-hangzhou}
+  aliyun-endpoint: ${OCR_ALIYUN_ENDPOINT:ocr-api.cn-hangzhou.aliyuncs.com}
+  fallback-provider: ${OCR_FALLBACK_PROVIDER:qwen-vl}
+  confidence-threshold: 0.80
+  auto-classify: true
+
+# ── Actuator (management endpoints) ──
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# ── Logging ──
+logging:
+  config: classpath:logback-spring.xml
+  level:
+    com.project.reimbursement: INFO
+    com.baomidou.mybatisplus: WARN
+    org.springframework.security: WARN
